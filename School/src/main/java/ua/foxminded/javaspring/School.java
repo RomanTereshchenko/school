@@ -191,7 +191,7 @@ public class School {
 	
 	void buildAllGroups() {
 		School school = new School();
-		for (int i = 1; i < 21; i++) {
+		for (int i = 1; i <= groups.size(); i++) {
 			school.buildOneGroup(i);
 		}
 	}
