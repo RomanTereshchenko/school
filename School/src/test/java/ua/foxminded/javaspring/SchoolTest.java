@@ -7,8 +7,10 @@ import org.junit.jupiter.api.Test;
 class SchoolTest {
 
 	@Test
-	void test() {
-		fail("Not yet implemented");
-	}
+	void getFileLines_returnsLinesFromTestFile_testFile() {
 
+		School school = new School();
+
+		assertEquals("line1\n" + "line2\n" + "line3", school.readCreatingTablesScript("testFile.txt").toString());
+	}
 }
