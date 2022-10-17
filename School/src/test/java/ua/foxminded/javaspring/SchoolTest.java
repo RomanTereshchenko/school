@@ -9,8 +9,6 @@ class SchoolTest {
 	@Test
 	void getFileLines_returnsLinesFromTestFile_testFile() {
 
-		School school = new School();
-
-		assertEquals("line1\n" + "line2\n" + "line3", school.readCreatingTablesScript("testFile.txt").toString());
+		assertEquals("line1\n" + "line2\n" + "line3", Service.readCreatingTablesScript("testFile.txt").toString());
 	}
 }

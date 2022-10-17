@@ -1,8 +1,5 @@
 package ua.foxminded.javaspring;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -13,10 +10,8 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
-import java.util.Scanner;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-import java.util.stream.Stream;
 
 public class School {
 
@@ -26,11 +21,7 @@ public class School {
 	public static final String SCHOOL_DB_PASSWORD = "1234";
 	Random random = new Random();
 
-	List<String> groups = IntStream.rangeClosed(1, 10)
-			.mapToObj(number -> (new StringBuilder().append(((char) (random.nextInt(26) + 'a'))).append(
-					((char) (new Random().nextInt(26) + 'a'))) + ("-" + random.nextInt(10) + random.nextInt(10)))
-					.toString())
-			.collect(Collectors.toList());
+	
 
 	List<String> courses = Arrays.asList("Mathematics", "Science", "Health", "Handwriting", "Art", "Music",
 			"Leadership", "Speech", "English", "Algebra");
@@ -43,78 +34,15 @@ public class School {
 			"Peralta", "Mcknight", "O'Quinn", "Simons", "Kelley", "Trejo", "Dougherty", "Palacios", "Murphy", "Gordon",
 			"Mcgee", "Strong", "Philip");
 
-	int nextUnassignedStudentID = 1;
+
 	static School school = new School();
 
-	public static void main(String[] args) {
-
-		school.menu();
-
-	}
-
-	void menu() {
-
-		Scanner scan = new Scanner(System.in);
-
-		System.out.println("Find all groups with less or equal students’ number: \n Enter a number between 10 and 30");
-		int lessOrEqualNum = scan.nextInt();
-		scan.nextLine();
-		school.findGroupsWithStudentsLessOrEqual(lessOrEqualNum);
-		System.out.println();
-
-		System.out.println("Find all students related to the course with the given name");
-		System.out.println(
-				"Enter a course name (Mathematics, Science, Health, Handwriting, Art, Music, Leadership, Speech, English, Algebra)");
-		String courseName = scan.nextLine();
-		school.findStudentsRelatedToCourse(courseName);
-		System.out.println();
-
-		System.out.println("Add a new student");
-		System.out.println("Enter the student ID");
-		int id = scan.nextInt();
-		scan.nextLine();
-		System.out.println("Enter the student first name");
-		String firstName = scan.nextLine();
-		System.out.println("Enter the student last name");
-		String lastName = scan.nextLine();
-		school.addStudent(id, firstName, lastName);
-		System.out.println();
-
-		System.out.println("Delete a student by the STUDENT_ID");
-		System.out.println("Enter the student ID");
-		int idToDel = scan.nextInt();
-		scan.nextLine();
-		school.deleteStudent(idToDel);
-		System.out.println();
-
-		System.out.println("Add a student to the course (from a list)");
-		System.out.println("Enter the student ID from 1, 2, 3, 4, 5");
-		int stIdToAdd = scan.nextInt();
-		scan.nextLine();
-		System.out.println("Enter the course ID from 1, 2, 3, 4, 5");
-		int courseIdToAdd = scan.nextInt();
-		scan.nextLine();
-		school.addStudentToCourse(stIdToAdd, courseIdToAdd);
-		System.out.println();
-
-		System.out.println("Remove the student from one of their courses");
-		System.out.println("Enter the student ID from 1, 2, 3, 4, 5");
-		int stIdToRem = scan.nextInt();
-		scan.nextLine();
-		System.out.println("Enter the course ID from 1, 2, 3, 4, 5");
-		int courseIdToRem = scan.nextInt();
-		scan.nextLine();
-		school.deleteStudentFromCourse(stIdToRem, courseIdToRem);
-
-		scan.close();
-
-	}
 
 	void createSchemaAndTables() {
 
 		try (Connection conn = DriverManager.getConnection(SCHOOL_DB_URL, SCHOOL_DB_USERNAME, SCHOOL_DB_PASSWORD);
 				PreparedStatement st = conn
-						.prepareStatement(readCreatingTablesScript(pathToSchemaAndTablesCreatingFile))) {
+						.prepareStatement(Service.readCreatingTablesScript(pathToSchemaAndTablesCreatingFile))) {
 			System.out.println("Connected to database");
 			st.executeUpdate();
 			System.out.println("Tables created");
@@ -125,47 +53,8 @@ public class School {
 
 	}
 
-	String readCreatingTablesScript(String scriptFilePath) {
-
-		List<String> scriptLines = new ArrayList<>();
-
-		try (Stream<String> stream = Files.lines(Paths.get(scriptFilePath))) {
-
-			scriptLines = stream.collect(Collectors.toList());
-
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-
-		return String.join("\n", scriptLines);
-
-	}
-
-	void createGroups() {
-		IntStream.rangeClosed(1, school.groups.size())
-				.forEach(number -> school.addGroup(number, groups.get(number - 1)));
-		System.out.println("Groups created");
-	}
-
-	void addGroup(int id, String name) {
-
-		String addGroupQuery = "INSERT INTO school.groups VALUES(?, ?);";
-
-		try (Connection conn = DriverManager.getConnection(SCHOOL_DB_URL, SCHOOL_DB_USERNAME, SCHOOL_DB_PASSWORD);
-				PreparedStatement addGroupStatm = conn.prepareStatement(addGroupQuery);) {
-			System.out.println("Connected to database");
-
-			addGroupStatm.setInt(1, id);
-			addGroupStatm.setString(2, name);
-
-			addGroupStatm.executeUpdate();
-
-		} catch (SQLException e) {
-			System.out.println("Connection falure");
-			e.printStackTrace();
-		}
-
-	}
+	
+	
 
 	List<String> getGroups() {
 
@@ -265,23 +154,7 @@ public class School {
 		System.out.println("Student with the id " + id + " is deleted from the database");
 	}
 
-	void buildAllGroups() {
-		IntStream.rangeClosed(1, groups.size()).forEach(school::buildOneGroup);
-	}
 
-	void buildOneGroup(int groupID) {
-
-		int limitOfStudentsInGroup = ((random.nextInt(20)) + 10);
-		int numberOfStudentsInGroup = 0;
-		School school = new School();
-
-		while (numberOfStudentsInGroup < limitOfStudentsInGroup) {
-			school.assignStudentWithGroup(groupID, nextUnassignedStudentID);
-			numberOfStudentsInGroup++;
-			nextUnassignedStudentID++;
-		}
-
-	}
 
 	void assignStudentWithGroup(int groupID, int unassignedStudentID) {
 
