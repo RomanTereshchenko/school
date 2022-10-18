@@ -10,6 +10,8 @@ import java.util.stream.Stream;
 
 public class Service {
 	
+	
+	
 	static String readCreatingTablesScript(String scriptFilePath) {
 
 		List<String> scriptLines = new ArrayList<>();
