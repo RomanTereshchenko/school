@@ -6,12 +6,16 @@ import java.io.InputStream;
 import java.util.Properties;
 
 public class DBConfig {
+	
+	String schoolURL = getProperty("url");
+	String schoolUsername = getProperty("username");
+	String schoolPassword = getProperty("password");
 
-	static String getProperty(String propertyName) {
+	String getProperty(String propertyName) {
 		
 		String propertyValue = null;
 
-		try (InputStream input = new FileInputStream("DBConfig.properties")) {
+		try (InputStream input = getClass().getResourceAsStream("DBConfig.properties")) {
 
 			Properties dbProp = new Properties();
 			
