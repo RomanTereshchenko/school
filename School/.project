@@ -20,4 +20,10 @@
 		<nature>org.eclipse.jdt.core.javanature</nature>
 		<nature>org.eclipse.m2e.core.maven2Nature</nature>
 	</natures>
+	<variableList>
+		<variable>
+			<name>RESOURCES</name>
+			<value>file:/C:/Users/ASUS/git/school-console-app/School/src/main/resources</value>
+		</variable>
+	</variableList>
 </projectDescription>

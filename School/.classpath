@@ -35,5 +35,6 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="con" path="org.eclipse.datatools.connectivity.jdt.DRIVERLIBRARY/PostgreSQL JDBC Driver"/>
+	<classpathentry kind="lib" path="src/main/resources/lombok.jar"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>

@@ -1,28 +1,28 @@
 CREATE SCHEMA IF NOT EXISTS school
      AUTHORIZATION postgres;
 
-DROP TABLE IF EXISTS school.courses;
+DROP TABLE IF EXISTS school.courses CASCADE;
 
 CREATE TABLE IF NOT EXISTS school.courses
 (
-	course_id INT PRIMARY KEY,
+	course_id SERIAL PRIMARY KEY,
     course_name VARCHAR(20) NOT NULL,
     course_description VARCHAR(200)
 );
 
-DROP TABLE IF EXISTS school.groups;
+DROP TABLE IF EXISTS school.groups CASCADE;
 
 CREATE TABLE IF NOT EXISTS school.groups
 (
-    group_id INT PRIMARY KEY,
+    group_id SERIAL PRIMARY KEY,
     group_name VARCHAR(5) NOT NULL
 );
 
-DROP TABLE IF EXISTS school.students;
+DROP TABLE IF EXISTS school.students CASCADE;
 
 CREATE TABLE IF NOT EXISTS school.students
 (
-    student_id INT PRIMARY KEY,
+    student_id SERIAL PRIMARY KEY,
     group_id INT,
     first_name VARCHAR(20) NOT NULL,
     last_name VARCHAR(20) NOT NULL,
@@ -31,7 +31,7 @@ CREATE TABLE IF NOT EXISTS school.students
 			ON DELETE SET NULL
 );
 
-DROP TABLE IF EXISTS school.students_courses;
+DROP TABLE IF EXISTS school.students_courses CASCADE;
 
 CREATE TABLE IF NOT EXISTS school.students_courses
 (
