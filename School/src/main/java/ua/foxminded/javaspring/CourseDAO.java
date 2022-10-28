@@ -6,19 +6,17 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-import java.util.Random;
 import java.util.stream.IntStream;
 
 public class CourseDAO {
 
-	private DBConfig dbConfig;
-	private CourseGenerator courseGenerator;
-	private Random random = new Random();
+	private DBConfig dbConfig = new DBConfig();
+	private CourseGenerator courseGenerator = new CourseGenerator();
+	private StudentGenerator studentGenerator = new StudentGenerator();
 
 	void addAllCoursesToDB() {
-		
+
 		IntStream.rangeClosed(1, courseGenerator.courses.size())
 				.forEach(courseNumber -> addCourseToDB(courseGenerator.courses.get(courseNumber - 1).getCourseName()));
 	}
@@ -41,29 +39,37 @@ public class CourseDAO {
 		}
 	}
 
-	void assignCoursesToAllStudents() {
-
-		IntStream.rangeClosed(1, 200).forEach(this::assignCoursesToOneStudent);
-
+	void addStudentsCoursesAssignmentsInDB() {
+		IntStream.rangeClosed(0, (studentGenerator.students.size() - 1)).forEach(this::addOneStudentCoursesAssignmentsInDB);
+	}
+	
+	void addOneStudentCoursesAssignmentsInDB(int studentID) {
+		List<Course> coursesOfStudent = studentGenerator.students.get(studentID).getCourses();
+		System.out.println(coursesOfStudent);
+		for (Course course : coursesOfStudent) {
+			addStudentCourseAssignmentInDB(studentID, course.getCourseID());
+		}
 	}
 
-	private void assignCoursesToOneStudent(int nextStudentID) {
+	void addStudentCourseAssignmentInDB(int studentID, int courseID) {
 
-		int numberOfCoursesLimit = (random.nextInt(2) + 1);
-		int numberOfAssignedCourses = 1;
+		String addStudentToCourseQuery = "INSERT INTO school.students_courses (student_id, course_id) VALUES (?, ?);";
 
-		ArrayList<Integer> courseIDs = new ArrayList<>();
-		for (int i = 1; i <= courseGenerator.courses.size(); i++)
-			courseIDs.add(i);
-		Collections.shuffle(courseIDs);
-		int randomCourseIDIndex = 0;
+		try (Connection connection = DriverManager.getConnection(dbConfig.schoolURL, dbConfig.schoolUsername,
+				dbConfig.schoolPassword);
+				PreparedStatement addStudentToCourseStatment = connection.prepareStatement(addStudentToCourseQuery)) {
 
-		while (numberOfAssignedCourses <= numberOfCoursesLimit) {
-			addStudentToCourse(nextStudentID, (courseIDs.get(randomCourseIDIndex)));
-			randomCourseIDIndex++;
-			numberOfAssignedCourses++;
+			addStudentToCourseStatment.setInt(1, studentID);
+			addStudentToCourseStatment.setInt(2, courseID);
 
+			addStudentToCourseStatment.executeUpdate();
+
+		} catch (SQLException e) {
+			System.out.println("Connection falure");
+			e.printStackTrace();
 		}
+
+		System.out.println("Student with ID " + studentID + " added to course " + courseID);
 	}
 
 	List<Integer> getCoursesOfStudent(int studentID) {
@@ -85,27 +91,6 @@ public class CourseDAO {
 			e.printStackTrace();
 		}
 		return studentCourses;
-	}
-
-	void addStudentToCourse(int studentID, int courseID) {
-
-		String addStudentToCourseQuery = "INSERT INTO school.students_courses (student_id, course_id) VALUES (?, ?);";
-
-		try (Connection connection = DriverManager.getConnection(dbConfig.schoolURL, dbConfig.schoolUsername,
-				dbConfig.schoolPassword);
-				PreparedStatement addStudentToCourseStatment = connection.prepareStatement(addStudentToCourseQuery)) {
-
-			addStudentToCourseStatment.setInt(1, studentID);
-			addStudentToCourseStatment.setInt(2, courseID);
-
-			addStudentToCourseStatment.executeUpdate();
-
-		} catch (SQLException e) {
-			System.out.println("Connection falure");
-			e.printStackTrace();
-		}
-
-		System.out.println("Student with ID " + studentID + " added to course " + courseID);
 	}
 
 	void deleteStudentFromCourse(int studentID, int courseID) {

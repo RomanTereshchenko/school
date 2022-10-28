@@ -7,15 +7,16 @@ import java.util.Properties;
 
 public class DBConfig {
 	
+	private static String pathToPropertiesFile = "DBConfig.properties"; 
 	String schoolURL = getProperty("url");
 	String schoolUsername = getProperty("username");
 	String schoolPassword = getProperty("password");
 
-	String getProperty(String propertyName) {
+	static String getProperty(String propertyName) {
 		
 		String propertyValue = null;
 
-		try (InputStream input = getClass().getResourceAsStream("DBConfig.properties")) {
+		try (InputStream input = new FileInputStream(pathToPropertiesFile)) {
 
 			Properties dbProp = new Properties();
 			

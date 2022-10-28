@@ -16,16 +16,15 @@ public class GroupGenerator {
 					.toString())
 			.collect(Collectors.toList());
 	
-	List<Group> groups = generateGroups();
+	List<Group> groups = new ArrayList<>();
 
 	List<Group> generateGroups() {
-		List<Group> groupsLocal = new ArrayList<>();
 		
 		for (String groupName : groupNames) {
-			groupsLocal.add(new Group (groupName));
+			groups.add(new Group (groupName));
 		}
 		System.out.println("Groups generated");
-		return groupsLocal;
+		return groups;
 	}
 
 }

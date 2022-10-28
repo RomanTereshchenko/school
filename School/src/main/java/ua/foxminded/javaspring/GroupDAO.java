@@ -13,6 +13,7 @@ import java.util.stream.IntStream;
 public class GroupDAO {
 
 	private DBConfig dbConfig = new DBConfig();
+	private StudentGenerator studentGenerator = new StudentGenerator();
 	private GroupGenerator groupGenerator = new GroupGenerator();
 
 	
@@ -66,5 +67,39 @@ public class GroupDAO {
 		}
 		return groupsWithStudentsLessOrEqual;
 	}
+	
+	void addGroupIDToAllTheirStudentsInDB() {
+		for (Student student : studentGenerator.students) {
+			if (student.getGroupID() != 0) {
+				addGroupIDToStudentInDB(student.getGroupID(), student.getFirstName(), student.getLastName());
+			}
+		}
+		System.out.println("Students assigned to groups in School database");
+	}
+	
+	private void addGroupIDToStudentInDB(int groupID, String studentFirstName, String studentLastName ) {
+
+		String assignGroupToStudentQuery = 
+				"UPDATE school.students SET group_id = ? WHERE first_name = ? AND last_name = ?;";
+
+		try (Connection connection = DriverManager.getConnection(dbConfig.schoolURL, dbConfig.schoolUsername,
+				dbConfig.schoolPassword);
+				PreparedStatement assignGroupToStudentStatment = connection
+						.prepareStatement(assignGroupToStudentQuery)) {
+
+			assignGroupToStudentStatment.setInt(1, groupID);
+			assignGroupToStudentStatment.setString(2, studentFirstName);
+			assignGroupToStudentStatment.setString(3, studentLastName);
+
+			assignGroupToStudentStatment.executeUpdate();
+
+		} catch (SQLException e) {
+			System.out.println("Connection falure");
+			e.printStackTrace();
+		}
+		System.out.println("Student with ID " + studentFirstName + " " + studentLastName + " assigned to group with ID " + groupID);
+	}
+
+
 
 }

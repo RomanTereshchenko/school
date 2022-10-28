@@ -6,15 +6,14 @@ import static java.lang.System.exit;
 
 public class Controller {
 
-	private TablesDAO tablesDao;
-	private GroupGenerator groupGenerator;
-	private GroupDAO groupDao;
-	private CourseDAO courseDao;
-	private StudentGenerator studentGenerator;
-	private StudentDAO studentDao;
-	private CourseGenerator courseGenerator;
+	private TablesDAO tablesDao = new TablesDAO();
+	private GroupGenerator groupGenerator = new GroupGenerator();
+	private GroupDAO groupDao = new GroupDAO();
+	private CourseDAO courseDao = new CourseDAO();
+	private StudentGenerator studentGenerator = new StudentGenerator();
+	private StudentDAO studentDao = new StudentDAO();
+	private CourseGenerator courseGenerator = new CourseGenerator();
 	private Scanner scan = new Scanner(System.in);
-
 
 	void startUp() {
 
@@ -22,16 +21,20 @@ public class Controller {
 
 		groupGenerator.generateGroups();
 		groupDao.addGroupsToDB();
-		
+
 		courseGenerator.generateCourses();
 		courseDao.addAllCoursesToDB();
-		
+
 		studentGenerator.generateStudents();
-		studentDao.addStudentsToDB();
-
-		studentDao.addGroupIDToAllTheirStudentsInDB();
-		courseDao.assignCoursesToAllStudents();
-
+		System.out.println(studentGenerator.students);
+		studentDao.printStudents();
+//		studentDao.addStudentsToDB();
+//
+//		studentGenerator.assignAllGroupsToAllItsStudents();
+//		groupDao.addGroupIDToAllTheirStudentsInDB();
+//
+//		studentGenerator.assignCoursesToAllStudents();
+//		courseDao.addStudentsCoursesAssignmentsInDB();
 	}
 
 	void menu() {
@@ -109,7 +112,7 @@ public class Controller {
 		if (studentCourses.contains(courseIdToAdd)) {
 			System.out.println("This student is already addigned to this course. Choose other student and course.");
 		} else
-			courseDao.addStudentToCourse(stIdToAdd, courseIdToAdd);
+			courseDao.addStudentCourseAssignmentInDB(stIdToAdd, courseIdToAdd);
 		System.out.println();
 	}
 
