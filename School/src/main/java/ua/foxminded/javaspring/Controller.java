@@ -7,7 +7,7 @@ import static java.lang.System.exit;
 public class Controller {
 
 	private TablesDAO tablesDao = new TablesDAO();
-	private GroupGenerator groupGenerator = new GroupGenerator();
+	GroupGenerator groupGenerator = new GroupGenerator();
 	private GroupDAO groupDao = new GroupDAO();
 	private CourseDAO courseDao = new CourseDAO();
 	private StudentGenerator studentGenerator = new StudentGenerator();
@@ -15,10 +15,11 @@ public class Controller {
 	private CourseGenerator courseGenerator = new CourseGenerator();
 	private Scanner scan = new Scanner(System.in);
 
+
 	void startUp() {
 
 		tablesDao.createSchemaAndTables();
-
+		
 		groupGenerator.generateGroups();
 		groupDao.addGroupsToDB();
 
@@ -26,15 +27,13 @@ public class Controller {
 		courseDao.addAllCoursesToDB();
 
 		studentGenerator.generateStudents();
-		System.out.println(studentGenerator.students);
-		studentDao.printStudents();
-//		studentDao.addStudentsToDB();
-//
-//		studentGenerator.assignAllGroupsToAllItsStudents();
-//		groupDao.addGroupIDToAllTheirStudentsInDB();
-//
-//		studentGenerator.assignCoursesToAllStudents();
-//		courseDao.addStudentsCoursesAssignmentsInDB();
+		studentDao.addStudentsToDB();
+
+		studentGenerator.assignAllGroupsToAllItsStudents();
+		groupDao.addGroupIDToAllTheirStudentsInDB();
+
+		studentGenerator.assignCoursesToAllStudents();
+		courseDao.addStudentsCoursesAssignmentsToDB();
 	}
 
 	void menu() {

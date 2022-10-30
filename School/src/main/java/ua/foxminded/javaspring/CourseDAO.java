@@ -12,16 +12,16 @@ import java.util.stream.IntStream;
 public class CourseDAO {
 
 	private DBConfig dbConfig = new DBConfig();
-	private CourseGenerator courseGenerator = new CourseGenerator();
-	private StudentGenerator studentGenerator = new StudentGenerator();
 
 	void addAllCoursesToDB() {
 
-		IntStream.rangeClosed(1, courseGenerator.courses.size())
-				.forEach(courseNumber -> addCourseToDB(courseGenerator.courses.get(courseNumber - 1).getCourseName()));
+		IntStream.rangeClosed(1, CourseGenerator.courses.size())
+				.forEach(courseNumber -> addCourseToDB(CourseGenerator.courses.get(courseNumber - 1).getCourseName()));
+		
+		System.out.println("Courses added to School database");
 	}
 
-	private void addCourseToDB(String name) {
+	private void addCourseToDB(String courseName) {
 
 		String addCourseQuery = "INSERT INTO school.courses(course_name) VALUES (?);";
 
@@ -29,7 +29,7 @@ public class CourseDAO {
 				dbConfig.schoolPassword);
 				PreparedStatement addCourseStatment = connection.prepareStatement(addCourseQuery)) {
 
-			addCourseStatment.setString(1, name);
+			addCourseStatment.setString(1, courseName);
 
 			addCourseStatment.executeUpdate();
 
@@ -37,15 +37,17 @@ public class CourseDAO {
 			System.out.println("Connection falure");
 			e.printStackTrace();
 		}
+		System.out.println("Course " + courseName + " added to database");
 	}
 
-	void addStudentsCoursesAssignmentsInDB() {
-		IntStream.rangeClosed(0, (studentGenerator.students.size() - 1)).forEach(this::addOneStudentCoursesAssignmentsInDB);
+	void addStudentsCoursesAssignmentsToDB() {
+		IntStream.rangeClosed(1, StudentGenerator.students.size()).forEach(this::addOneStudentCoursesAssignmentsToDB);
+		
+		System.out.println("Students' assignments to courses added to School database");
 	}
 	
-	void addOneStudentCoursesAssignmentsInDB(int studentID) {
-		List<Course> coursesOfStudent = studentGenerator.students.get(studentID).getCourses();
-		System.out.println(coursesOfStudent);
+	void addOneStudentCoursesAssignmentsToDB(int studentID) {
+		List<Course> coursesOfStudent = StudentGenerator.students.get(studentID - 1).getCourses();
 		for (Course course : coursesOfStudent) {
 			addStudentCourseAssignmentInDB(studentID, course.getCourseID());
 		}
@@ -69,7 +71,7 @@ public class CourseDAO {
 			e.printStackTrace();
 		}
 
-		System.out.println("Student with ID " + studentID + " added to course " + courseID);
+		System.out.println("Student with ID " + studentID + " assigned to course " + courseID);
 	}
 
 	List<Integer> getCoursesOfStudent(int studentID) {

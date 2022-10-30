@@ -9,19 +9,12 @@ import java.util.stream.IntStream;
 public class StudentDAO {
 
 	private DBConfig dbConfig = new DBConfig();
-	private StudentGenerator studentGenerator = new StudentGenerator();
-
-
-	void printStudents() {
-		System.out.println(studentGenerator.studentLastNames);
-		System.out.println(studentGenerator.students);
-	}
 	
 	void addStudentsToDB() {
 		
-		IntStream.rangeClosed(0, 199)
-				.forEach(studentID -> addStudent((studentGenerator.students.get(studentID).getFirstName()),
-						(studentGenerator.students.get(studentID).getLastName())));
+		IntStream.rangeClosed(0, (StudentGenerator.students.size() - 1))
+				.forEach(studentID -> addStudent((StudentGenerator.students.get(studentID).getFirstName()),
+						(StudentGenerator.students.get(studentID).getLastName())));
 		System.out.println("Students added to School database");
 	}
 

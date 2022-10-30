@@ -7,7 +7,7 @@ import java.util.Properties;
 
 public class DBConfig {
 	
-	private static String pathToPropertiesFile = "DBConfig.properties"; 
+	private static String pathToPropertiesFile = "src/main/resources/DBConfig.properties"; 
 	String schoolURL = getProperty("url");
 	String schoolUsername = getProperty("username");
 	String schoolPassword = getProperty("password");

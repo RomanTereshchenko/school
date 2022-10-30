@@ -8,7 +8,7 @@ import java.sql.SQLException;
 public class TablesDAO {
 
 	private DBConfig dbConfig = new DBConfig();
-	private String pathToSchemaAndTablesCreatingFile = "createScholSchema&Tables.sql";
+	private String pathToSchemaAndTablesCreatingFile = "src/main/resources/createScholSchema&Tables.sql";
 	private Service service = new Service();
 
 	void createSchemaAndTables() {

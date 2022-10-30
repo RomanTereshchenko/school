@@ -9,8 +9,6 @@ import java.util.stream.IntStream;
 
 public class StudentGenerator {
 
-	private GroupGenerator groupGenerator = new GroupGenerator();
-	private CourseGenerator courseGenerator = new CourseGenerator();
 	private Random random = new Random();
 	private int nextUnassignedStudentID = 0;
 
@@ -18,26 +16,25 @@ public class StudentGenerator {
 			"Juliet", "Tanner", "Luella", "Enid", "Hadiya", "Rares", "Bryan", "Patsy", "Eshan", "Lester", "Bentley",
 			"Yu", "Finlay", "Sylvie");
 
-	List<String> studentLastNames = Arrays.asList("Ferry", "Buck", "Moody", "Craft", "Ridley", "Aguilar",
+	private List<String> studentLastNames = Arrays.asList("Ferry", "Buck", "Moody", "Craft", "Ridley", "Aguilar",
 			"Garrett", "Peralta", "Mcknight", "O'Quinn", "Simons", "Kelley", "Trejo", "Dougherty", "Palacios", "Murphy",
 			"Gordon", "Mcgee", "Strong", "Philip");
 
-	List<Student> students = new ArrayList<>();
+	static List<Student> students = new ArrayList<>();
+	
 		
-	List<Student> generateStudents() {
+	void generateStudents() {
 		
 		IntStream.rangeClosed(1, 200)
 		.forEach(studentID -> students
 				.add(new Student(studentID, studentFirstNames.get(random.nextInt(20)), studentLastNames.get(random.nextInt(20)))));
 
 		System.out.println("Students generated");
-		System.out.println(students);
-		return students;
 	}
 
 	void assignAllGroupsToAllItsStudents() {
 		while (nextUnassignedStudentID < students.size()) {
-			IntStream.rangeClosed(1, groupGenerator.groups.size()).forEach(this::assignOneGroupToAllItsStudents);
+			IntStream.rangeClosed(1, GroupGenerator.groups.size()).forEach(this::assignOneGroupToAllItsStudents);
 		}
 		System.out.println("Students assigned with groups");
 	}
@@ -74,18 +71,17 @@ public class StudentGenerator {
 		int numberOfAssignedCourses = 1;
 
 		ArrayList<Integer> courseIDs = new ArrayList<>();
-		for (int i = 0; i < courseGenerator.courses.size(); i++)
+		for (int i = 0; i < CourseGenerator.courses.size(); i++)
 			courseIDs.add(i);
 		Collections.shuffle(courseIDs);
 		int randomCourseIDIndex = 0;
 
 		List<Course> coursesOfStudent = new ArrayList<>();
 		while (numberOfAssignedCourses <= numberOfCoursesLimit) {
-			coursesOfStudent.add(courseGenerator.courses.get(courseIDs.get(randomCourseIDIndex)));
+			coursesOfStudent.add(CourseGenerator.courses.get(courseIDs.get(randomCourseIDIndex)));
 			randomCourseIDIndex++;
 			numberOfAssignedCourses++;
 		}
-		System.out.println(students);
 		students.get(nextStudentID).setCourses(coursesOfStudent);
 	}
 
