@@ -1,9 +1,12 @@
 package ua.foxminded.javaspring;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
 @AllArgsConstructor
+@NoArgsConstructor
 
 public class Course {
 	

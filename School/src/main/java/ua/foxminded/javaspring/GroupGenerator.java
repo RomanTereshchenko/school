@@ -3,28 +3,30 @@ package ua.foxminded.javaspring;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 public class GroupGenerator {
 
 	private Random random = new Random();
 
-	private List<String> groupNames = IntStream.rangeClosed(1, 10)
-			.mapToObj(number -> (new StringBuilder().append(((char) (random.nextInt(26) + 'a')))
-					.append(((char) (random.nextInt(26) + 'a'))) + ("-" + random.nextInt(10) + random.nextInt(10)))
-					.toString())
-			.collect(Collectors.toList());
+	List<Group> generateNGroups(int countToGenerate) {
 
-	static List<Group> groups = new ArrayList<>();
-
-	void generateGroups() {
-
-		for (int i = 0; i < groupNames.size(); i++) {
-			groups.add(new Group(i+1, groupNames.get(i)));
+		List<Group> groupsLocal = new ArrayList<>();
+		
+		for (int i = 0; i < countToGenerate; i++) {
+			Group group = new Group();
+			group.setGroupName(generateGroupName());
+			group.setGroupID(i+1);
+			groupsLocal.add(group);
 		}
+		
 		System.out.println("Groups generated");
-	
+		return groupsLocal;
+	}
+
+	private String generateGroupName() {
+		return (new StringBuilder().append(((char) (random.nextInt(26) + 'a')))
+				.append(((char) (random.nextInt(26) + 'a'))) + ("-" + random.nextInt(10) + random.nextInt(10)))
+				.toString();
 	}
 
 }

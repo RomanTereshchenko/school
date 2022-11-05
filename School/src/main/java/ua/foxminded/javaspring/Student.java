@@ -5,6 +5,7 @@ import java.util.List;
 import lombok.*;
 
 @Data
+@NoArgsConstructor
 
 public class Student {
 	
@@ -20,14 +21,6 @@ public class Student {
 		this.firstName = firstName;
 		this.lastName = lastName;
 	}
-
-	public Student(int studentID, List<Course> courses) {
-		super();
-		this.studentID = studentID;
-		this.courses = courses;
-	}
-	
-	
 	
 
 }

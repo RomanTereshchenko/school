@@ -16,10 +16,10 @@ public class TablesDAO {
 		try (Connection connection = DriverManager.getConnection(dbConfig.schoolURL, dbConfig.schoolUsername,
 				dbConfig.schoolPassword);
 
-				PreparedStatement createTablesStatement = connection
+				PreparedStatement createStatement = connection
 						.prepareStatement(service.readCreatingTablesScript(pathToSchemaAndTablesCreatingFile))) {
 
-			createTablesStatement.executeUpdate();
+			createStatement.executeUpdate();
 			System.out.println("Tables created");
 
 		} catch (SQLException e) {

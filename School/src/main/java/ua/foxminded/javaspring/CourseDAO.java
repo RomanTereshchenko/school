@@ -15,39 +15,37 @@ public class CourseDAO {
 
 	void addAllCoursesToDB() {
 
-		IntStream.rangeClosed(1, CourseGenerator.courses.size())
-				.forEach(courseNumber -> addCourseToDB(CourseGenerator.courses.get(courseNumber - 1).getCourseName()));
-		
+		Controller.courses.forEach(course -> addCourseToDB(course.getCourseName()));
 		System.out.println("Courses added to School database");
 	}
 
 	private void addCourseToDB(String courseName) {
 
-		String addCourseQuery = "INSERT INTO school.courses(course_name) VALUES (?);";
+		String insertQuery = "INSERT INTO school.courses(course_name) VALUES (?);";
 
 		try (Connection connection = DriverManager.getConnection(dbConfig.schoolURL, dbConfig.schoolUsername,
 				dbConfig.schoolPassword);
-				PreparedStatement addCourseStatment = connection.prepareStatement(addCourseQuery)) {
+				PreparedStatement insertStatement = connection.prepareStatement(insertQuery)) {
 
-			addCourseStatment.setString(1, courseName);
+			insertStatement.setString(1, courseName);
 
-			addCourseStatment.executeUpdate();
+			insertStatement.executeUpdate();
 
 		} catch (SQLException e) {
-			System.out.println("Connection falure");
+			System.out.println("Connection failure");
 			e.printStackTrace();
 		}
 		System.out.println("Course " + courseName + " added to database");
 	}
 
 	void addStudentsCoursesAssignmentsToDB() {
-		IntStream.rangeClosed(1, StudentGenerator.students.size()).forEach(this::addOneStudentCoursesAssignmentsToDB);
-		
+		IntStream.rangeClosed(1, Controller.students.size()).forEach(this::addOneStudentCoursesAssignmentsToDB);
+
 		System.out.println("Students' assignments to courses added to School database");
 	}
-	
+
 	void addOneStudentCoursesAssignmentsToDB(int studentID) {
-		List<Course> coursesOfStudent = StudentGenerator.students.get(studentID - 1).getCourses();
+		List<Course> coursesOfStudent = Controller.students.get(studentID - 1).getCourses();
 		for (Course course : coursesOfStudent) {
 			addStudentCourseAssignmentInDB(studentID, course.getCourseID());
 		}
@@ -55,41 +53,40 @@ public class CourseDAO {
 
 	void addStudentCourseAssignmentInDB(int studentID, int courseID) {
 
-		String addStudentToCourseQuery = "INSERT INTO school.students_courses (student_id, course_id) VALUES (?, ?);";
+		String insertQuery = "INSERT INTO school.students_courses (student_id, course_id) VALUES (?, ?);";
 
 		try (Connection connection = DriverManager.getConnection(dbConfig.schoolURL, dbConfig.schoolUsername,
-				dbConfig.schoolPassword);
-				PreparedStatement addStudentToCourseStatment = connection.prepareStatement(addStudentToCourseQuery)) {
+				dbConfig.schoolPassword); PreparedStatement insertStatment = connection.prepareStatement(insertQuery)) {
 
-			addStudentToCourseStatment.setInt(1, studentID);
-			addStudentToCourseStatment.setInt(2, courseID);
+			insertStatment.setInt(1, studentID);
+			insertStatment.setInt(2, courseID);
 
-			addStudentToCourseStatment.executeUpdate();
+			insertStatment.executeUpdate();
 
 		} catch (SQLException e) {
-			System.out.println("Connection falure");
+			System.out.println("Connection failure");
 			e.printStackTrace();
 		}
 
 		System.out.println("Student with ID " + studentID + " assigned to course " + courseID);
 	}
 
-	List<Integer> getCoursesOfStudent(int studentID) {
+	List<Integer> getCourseIDsOfStudent(int studentID) {
 
 		List<Integer> studentCourses = new ArrayList<>();
-		String getQuery = "SELECT course_id FROM school.students_courses WHERE student_id = ?;";
+		String selectQuery = "SELECT course_id FROM school.students_courses WHERE student_id = ?;";
 
 		try (Connection connection = DriverManager.getConnection(dbConfig.schoolURL, dbConfig.schoolUsername,
 				dbConfig.schoolPassword);
-				PreparedStatement getStudentsCoursesStatement = connection.prepareStatement(getQuery);) {
+				PreparedStatement selectStatement = connection.prepareStatement(selectQuery);) {
 
-			getStudentsCoursesStatement.setInt(1, studentID);
-			ResultSet rs = getStudentsCoursesStatement.executeQuery();
+			selectStatement.setInt(1, studentID);
+			ResultSet rs = selectStatement.executeQuery();
 			while (rs.next()) {
 				studentCourses.add(rs.getInt("course_id"));
 			}
 		} catch (SQLException e) {
-			System.out.println("Connection falure");
+			System.out.println("Connection failure");
 			e.printStackTrace();
 		}
 		return studentCourses;
@@ -97,50 +94,51 @@ public class CourseDAO {
 
 	void deleteStudentFromCourse(int studentID, int courseID) {
 
-		String deleteStudentFromCourseQuery = "DELETE FROM school.students_courses WHERE student_id = ? AND course_id = ?;";
+		String deleteQuery = "DELETE FROM school.students_courses WHERE student_id = ? AND course_id = ?;";
 
 		try (Connection connection = DriverManager.getConnection(dbConfig.schoolURL, dbConfig.schoolUsername,
 				dbConfig.schoolPassword);
-				PreparedStatement deleteStudentFromCourseStatment = connection
-						.prepareStatement(deleteStudentFromCourseQuery)) {
+				PreparedStatement deleteStatement = connection.prepareStatement(deleteQuery)) {
 
-			deleteStudentFromCourseStatment.setInt(1, studentID);
-			deleteStudentFromCourseStatment.setInt(2, courseID);
+			deleteStatement.setInt(1, studentID);
+			deleteStatement.setInt(2, courseID);
 
-			deleteStudentFromCourseStatment.executeUpdate();
+			deleteStatement.executeUpdate();
 
 		} catch (SQLException e) {
-			System.out.println("Connection falure");
+			System.out.println("Connection failure");
 			e.printStackTrace();
 		}
 
 		System.out.println("Student with ID " + studentID + " removed from course with ID " + courseID);
 	}
 
-	List<String> getStudentsRelatedToCourse(String courseName) {
+	List<Student> getStudentsRelatedToCourse(String courseName) {
 
-		List<String> studentsRelatedToCourse = new ArrayList<>();
-		String getStudentsRelatedToCourseQuery = "SELECT school.students.first_name, school.students.last_name FROM school.students "
+		List<Student> studentsRelatedToCourse = new ArrayList<>();
+		String selectQuery = 
+				"SELECT school.students.student_id, school.students.first_name, school.students.last_name FROM school.students "
 				+ "INNER JOIN school.students_courses ON school.students.student_id = school.students_courses.student_id "
 				+ "INNER JOIN school.courses ON school.courses.course_id = school.students_courses.course_id "
 				+ "WHERE course_name = ?;";
 
 		try (Connection connection = DriverManager.getConnection(dbConfig.schoolURL, dbConfig.schoolUsername,
 				dbConfig.schoolPassword);
-				PreparedStatement getStudentsRelatedToCourseStatment = connection
-						.prepareStatement(getStudentsRelatedToCourseQuery);) {
+				PreparedStatement selectStatement = connection
+						.prepareStatement(selectQuery);) {
 
-			getStudentsRelatedToCourseStatment.setString(1, courseName);
-			ResultSet rs = getStudentsRelatedToCourseStatment.executeQuery();
+			selectStatement.setString(1, courseName);
+			ResultSet rs = selectStatement.executeQuery();
 
 			while (rs.next()) {
-				studentsRelatedToCourse.add(rs.getString("first_name") + " " + rs.getString("last_name"));
+				studentsRelatedToCourse
+				.add(new Student ((rs.getInt("student_id")), (rs.getString("first_name")), (rs.getString("last_name"))));
 			}
 
 		}
 
 		catch (SQLException e) {
-			System.out.println("Connection falure");
+			System.out.println("Connection failure");
 			e.printStackTrace();
 		}
 

@@ -7,16 +7,23 @@ import java.util.Properties;
 
 public class DBConfig {
 	
-	private static String pathToPropertiesFile = "src/main/resources/DBConfig.properties"; 
-	String schoolURL = getProperty("url");
-	String schoolUsername = getProperty("username");
-	String schoolPassword = getProperty("password");
+	private static String pathToProperties = "src/main/resources/DBConfig.properties"; 
+	String schoolURL;
+	String schoolUsername;
+	String schoolPassword;
+		
+	public DBConfig() {
+		super();
+		schoolURL = getProperty("url");
+		schoolUsername = getProperty("username");
+		schoolPassword = getProperty("password");
+	}
 
-	static String getProperty(String propertyName) {
+	static String getProperty(String propertyName) throws RuntimeException {
 		
 		String propertyValue = null;
 
-		try (InputStream input = new FileInputStream(pathToPropertiesFile)) {
+		try (InputStream input = new FileInputStream(pathToProperties)) {
 
 			Properties dbProp = new Properties();
 			

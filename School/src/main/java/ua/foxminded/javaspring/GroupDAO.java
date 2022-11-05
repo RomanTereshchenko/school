@@ -7,51 +7,50 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.IntStream;
 
 public class GroupDAO {
 
 	private DBConfig dbConfig = new DBConfig();
 
 	void addGroupsToDB() {
-		IntStream.rangeClosed(1, GroupGenerator.groups.size())
-				.forEach(groupID -> addGroup(GroupGenerator.groups.get(groupID - 1).getGroupName()));
+
+		Controller.groups.forEach(group -> addGroup(group.getGroupName()));
 		System.out.println("Groups added to School database");
 	}
 
 	private void addGroup(String name) {
 
-		String addGroupQuery = "INSERT INTO school.groups(group_name) VALUES(?);";
+		String insertQuery = "INSERT INTO school.groups(group_name) VALUES(?);";
 
 		try (Connection connection = DriverManager.getConnection(dbConfig.schoolURL, dbConfig.schoolUsername,
 				dbConfig.schoolPassword);
-				PreparedStatement addGroupStatment = connection.prepareStatement(addGroupQuery);) {
+				PreparedStatement insertStatement = connection.prepareStatement(insertQuery);) {
 
-			addGroupStatment.setString(1, name);
+			insertStatement.setString(1, name);
 
-			addGroupStatment.executeUpdate();
+			insertStatement.executeUpdate();
 
 		} catch (SQLException e) {
-			System.out.println("Connection falure");
+			System.out.println("Connection failure");
 			e.printStackTrace();
 		}
 		System.out.println("Group " + name + " added to the database");
 	}
 
-	List<String> findGroupsWithStudentsLessOrEqual(int studentsInGroup) {
+	List<String> selectGroupsByStudentsCount(int studentsCount) {
 
 		List<String> groupsWithStudentsLessOrEqual = new ArrayList<>();
-		String selectGroupsWithConditionQuery = "SELECT group_name FROM "
+		String selectQuery = "SELECT group_name FROM "
 				+ "(school.groups inner join school.students ON school.groups.group_id = school.students.group_id) "
 				+ "group by school.groups.group_id HAVING COUNT (school.groups.group_id) <= ?";
 
 		try (Connection connection = DriverManager.getConnection(dbConfig.schoolURL, dbConfig.schoolUsername,
 				dbConfig.schoolPassword);
-				PreparedStatement getgroupsWithConditionStatment = connection
-						.prepareStatement(selectGroupsWithConditionQuery);) {
+				PreparedStatement selectStatement = connection
+						.prepareStatement(selectQuery);) {
 
-			getgroupsWithConditionStatment.setInt(1, studentsInGroup);
-			ResultSet rs = getgroupsWithConditionStatment.executeQuery();
+			selectStatement.setInt(1, studentsCount);
+			ResultSet rs = selectStatement.executeQuery();
 			while (rs.next()) {
 				groupsWithStudentsLessOrEqual.add(rs.getString("group_name"));
 			}
@@ -65,8 +64,8 @@ public class GroupDAO {
 	}
 
 	void addGroupIDToAllTheirStudentsInDB() {
-		
-		for (Student student : StudentGenerator.students) {
+
+		for (Student student : Controller.students) {
 			if (student.getGroupID() != 0) {
 				addGroupIDToStudentInDB(student.getGroupID(), student.getFirstName(), student.getLastName());
 			}
@@ -76,25 +75,25 @@ public class GroupDAO {
 
 	private void addGroupIDToStudentInDB(int groupID, String studentFirstName, String studentLastName) {
 
-		String assignGroupToStudentQuery = "UPDATE school.students SET group_id = ? WHERE first_name = ? AND last_name = ?;";
+		String updateQuery = "UPDATE school.students SET group_id = ? WHERE first_name = ? AND last_name = ?;";
 
 		try (Connection connection = DriverManager.getConnection(dbConfig.schoolURL, dbConfig.schoolUsername,
 				dbConfig.schoolPassword);
-				PreparedStatement assignGroupToStudentStatment = connection
-						.prepareStatement(assignGroupToStudentQuery)) {
+				PreparedStatement updateStatement = connection
+						.prepareStatement(updateQuery)) {
 
-			assignGroupToStudentStatment.setInt(1, groupID);
-			assignGroupToStudentStatment.setString(2, studentFirstName);
-			assignGroupToStudentStatment.setString(3, studentLastName);
+			updateStatement.setInt(1, groupID);
+			updateStatement.setString(2, studentFirstName);
+			updateStatement.setString(3, studentLastName);
 
-			assignGroupToStudentStatment.executeUpdate();
+			updateStatement.executeUpdate();
 
 		} catch (SQLException e) {
-			System.out.println("Connection falure");
+			System.out.println("Connection failure");
 			e.printStackTrace();
 		}
-		System.out.println("Student " + studentFirstName + " " + studentLastName + " assigned to group with ID "
-				+ groupID);
+		System.out.println(
+				"Student " + studentFirstName + " " + studentLastName + " assigned to group with ID " + groupID);
 	}
 
 }
