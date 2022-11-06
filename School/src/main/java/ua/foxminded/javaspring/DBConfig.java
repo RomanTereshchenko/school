@@ -17,6 +17,10 @@ public class DBConfig {
 		schoolURL = getProperty("url");
 		schoolUsername = getProperty("username");
 		schoolPassword = getProperty("password");
+		
+		if (schoolURL == null || schoolUsername == null || schoolPassword == null) {
+			throw new RuntimeException ("Failed to connect to School database");
+		}
 	}
 
 	static String getProperty(String propertyName) throws RuntimeException {
