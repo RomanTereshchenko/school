@@ -1,7 +1,6 @@
 package ua.foxminded.javaspring;
 
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
@@ -18,8 +17,7 @@ public class StudentDAO {
 	void addStudent(String firstName, String lastName) {
 
 		String insertQuery = "INSERT INTO school.students (first_name, last_name) VALUES (?, ?);";
-		try (Connection connection = DriverManager.getConnection(dbConfig.schoolURL, dbConfig.schoolUsername,
-				dbConfig.schoolPassword);
+		try (Connection connection = dbConfig.getConnection();
 				PreparedStatement insertStatement = connection.prepareStatement(insertQuery)) {
 
 			insertStatement.setString(1, firstName);
@@ -39,8 +37,7 @@ public class StudentDAO {
 
 		String deleteQuery = "DELETE FROM school.students WHERE student_id = ?;";
 
-		try (Connection connection = DriverManager.getConnection(dbConfig.schoolURL, dbConfig.schoolUsername,
-				dbConfig.schoolPassword);
+		try (Connection connection = dbConfig.getConnection();
 				PreparedStatement deleteStatment = connection.prepareStatement(deleteQuery)) {
 
 			deleteStatment.setInt(1, id);

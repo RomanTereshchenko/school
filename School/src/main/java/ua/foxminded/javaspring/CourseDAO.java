@@ -23,8 +23,7 @@ public class CourseDAO {
 
 		String insertQuery = "INSERT INTO school.courses(course_name) VALUES (?);";
 
-		try (Connection connection = DriverManager.getConnection(dbConfig.schoolURL, dbConfig.schoolUsername,
-				dbConfig.schoolPassword);
+		try (Connection connection = dbConfig.getConnection();
 				PreparedStatement insertStatement = connection.prepareStatement(insertQuery)) {
 
 			insertStatement.setString(1, courseName);
@@ -55,8 +54,8 @@ public class CourseDAO {
 
 		String insertQuery = "INSERT INTO school.students_courses (student_id, course_id) VALUES (?, ?);";
 
-		try (Connection connection = DriverManager.getConnection(dbConfig.schoolURL, dbConfig.schoolUsername,
-				dbConfig.schoolPassword); PreparedStatement insertStatment = connection.prepareStatement(insertQuery)) {
+		try (Connection connection = dbConfig.getConnection();
+				PreparedStatement insertStatment = connection.prepareStatement(insertQuery)) {
 
 			insertStatment.setInt(1, studentID);
 			insertStatment.setInt(2, courseID);
@@ -76,8 +75,7 @@ public class CourseDAO {
 		List<Integer> studentCourses = new ArrayList<>();
 		String selectQuery = "SELECT course_id FROM school.students_courses WHERE student_id = ?;";
 
-		try (Connection connection = DriverManager.getConnection(dbConfig.schoolURL, dbConfig.schoolUsername,
-				dbConfig.schoolPassword);
+		try (Connection connection = dbConfig.getConnection();
 				PreparedStatement selectStatement = connection.prepareStatement(selectQuery);) {
 
 			selectStatement.setInt(1, studentID);
@@ -96,8 +94,7 @@ public class CourseDAO {
 
 		String deleteQuery = "DELETE FROM school.students_courses WHERE student_id = ? AND course_id = ?;";
 
-		try (Connection connection = DriverManager.getConnection(dbConfig.schoolURL, dbConfig.schoolUsername,
-				dbConfig.schoolPassword);
+		try (Connection connection = dbConfig.getConnection();
 				PreparedStatement deleteStatement = connection.prepareStatement(deleteQuery)) {
 
 			deleteStatement.setInt(1, studentID);
@@ -116,23 +113,20 @@ public class CourseDAO {
 	List<Student> getStudentsRelatedToCourse(String courseName) {
 
 		List<Student> studentsRelatedToCourse = new ArrayList<>();
-		String selectQuery = 
-				"SELECT school.students.student_id, school.students.first_name, school.students.last_name FROM school.students "
+		String selectQuery = "SELECT school.students.student_id, school.students.first_name, school.students.last_name FROM school.students "
 				+ "INNER JOIN school.students_courses ON school.students.student_id = school.students_courses.student_id "
 				+ "INNER JOIN school.courses ON school.courses.course_id = school.students_courses.course_id "
 				+ "WHERE course_name = ?;";
 
-		try (Connection connection = DriverManager.getConnection(dbConfig.schoolURL, dbConfig.schoolUsername,
-				dbConfig.schoolPassword);
-				PreparedStatement selectStatement = connection
-						.prepareStatement(selectQuery);) {
+		try (Connection connection = dbConfig.getConnection();
+				PreparedStatement selectStatement = connection.prepareStatement(selectQuery);) {
 
 			selectStatement.setString(1, courseName);
 			ResultSet rs = selectStatement.executeQuery();
 
 			while (rs.next()) {
-				studentsRelatedToCourse
-				.add(new Student ((rs.getInt("student_id")), (rs.getString("first_name")), (rs.getString("last_name"))));
+				studentsRelatedToCourse.add(new Student((rs.getInt("student_id")), (rs.getString("first_name")),
+						(rs.getString("last_name"))));
 			}
 
 		}

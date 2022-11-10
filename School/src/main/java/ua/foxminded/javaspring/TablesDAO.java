@@ -13,9 +13,7 @@ public class TablesDAO {
 
 	void createSchemaAndTables() {
 
-		try (Connection connection = DriverManager.getConnection(dbConfig.schoolURL, dbConfig.schoolUsername,
-				dbConfig.schoolPassword);
-
+		try (Connection connection = dbConfig.getConnection();
 				PreparedStatement createStatement = connection
 						.prepareStatement(service.readCreatingTablesScript(pathToSchemaAndTablesCreatingFile))) {
 

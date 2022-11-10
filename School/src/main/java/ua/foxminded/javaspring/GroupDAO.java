@@ -1,7 +1,6 @@
 package ua.foxminded.javaspring;
 
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -22,8 +21,7 @@ public class GroupDAO {
 
 		String insertQuery = "INSERT INTO school.groups(group_name) VALUES(?);";
 
-		try (Connection connection = DriverManager.getConnection(dbConfig.schoolURL, dbConfig.schoolUsername,
-				dbConfig.schoolPassword);
+		try (Connection connection = dbConfig.getConnection();
 				PreparedStatement insertStatement = connection.prepareStatement(insertQuery);) {
 
 			insertStatement.setString(1, name);
@@ -44,10 +42,8 @@ public class GroupDAO {
 				+ "(school.groups inner join school.students ON school.groups.group_id = school.students.group_id) "
 				+ "group by school.groups.group_id HAVING COUNT (school.groups.group_id) <= ?";
 
-		try (Connection connection = DriverManager.getConnection(dbConfig.schoolURL, dbConfig.schoolUsername,
-				dbConfig.schoolPassword);
-				PreparedStatement selectStatement = connection
-						.prepareStatement(selectQuery);) {
+		try (Connection connection = dbConfig.getConnection();
+				PreparedStatement selectStatement = connection.prepareStatement(selectQuery);) {
 
 			selectStatement.setInt(1, studentsCount);
 			ResultSet rs = selectStatement.executeQuery();
@@ -77,10 +73,8 @@ public class GroupDAO {
 
 		String updateQuery = "UPDATE school.students SET group_id = ? WHERE first_name = ? AND last_name = ?;";
 
-		try (Connection connection = DriverManager.getConnection(dbConfig.schoolURL, dbConfig.schoolUsername,
-				dbConfig.schoolPassword);
-				PreparedStatement updateStatement = connection
-						.prepareStatement(updateQuery)) {
+		try (Connection connection = dbConfig.getConnection();
+				PreparedStatement updateStatement = connection.prepareStatement(updateQuery)) {
 
 			updateStatement.setInt(1, groupID);
 			updateStatement.setString(2, studentFirstName);
